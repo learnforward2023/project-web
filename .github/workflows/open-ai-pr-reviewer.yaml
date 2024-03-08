@@ -1,0 +1,62 @@
+name: S2Together | OpenAI PR reviewer
+
+on:
+  pull_request:
+    types:
+      - labeled
+
+jobs:
+  openai-reviewer:
+    name: Open AI PR reviewer by new prompt
+    runs-on: ubuntu-latest
+    if: github.event.label.name == 'Please review' && github.actor == 'learnforward2023'
+    env:
+      base_branch: main
+      GH_TOKEN: ${{ secrets.SUKUNA_BOT_TOKEN }}
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+    steps:
+      - name: Install jq
+        run: sudo apt-get install -y jq
+      - name: checkout
+        uses: actions/checkout@v4
+      - name: get review result and post comment
+        shell: sh
+        run: |
+          git fetch origin main
+          echo "diff result:"
+          git diff remotes/origin/main -U1
+          # get review result from Open AI
+          echo -n '{
+            "model": "gpt-4-1106-preview",
+            "temperature": 1,
+            "max_tokens": 4095,
+            "top_p": 1,
+            "frequency_penalty": 0,
+            "presence_penalty": 0,
+            "messages": 
+              [
+                {
+                  "role": "system",
+                  "content": "${{ secrets.CONTEXT_OF_NEXTJS }}"
+                },
+                {
+                  "role": "user",
+                  "content": ' > payload.json
+          echo $(git diff remotes/origin/main -U1) |jq -Rsa >> payload.json
+          echo '}]}' >> payload.json
+          echo "payload:"
+          cat payload.json
+          # send request and create comments file
+          curl -s https://api.openai.com/v1/chat/completions \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer ${OPENAI_API_KEY}" \
+            -d @payload.json | jq -r ".choices[].message.content" >> comments || exit 0
+          # Add comment to PR using Github CLI
+          echo "\n#### This comment is created by OpenAI API. 👍\nWebsite: [https://studytogether.vn](https://studytogether.vn) 🌟\nTiktok: [Lets Study Together](https://www.tiktok.com/@study2together) 🙏" >> comments
+          # Edit last commend or create new one
+          if [[ "${{ github.event.action }}" == "opened" ]]; then
+            gh pr comment -F ./comments ${{ github.event.pull_request.html_url }}
+          else
+            gh pr comment --edit-last -F ./comments ${{ github.event.pull_request.html_url }} || 
+              gh pr comment -F ./comments ${{ github.event.pull_request.html_url }}
+          fi

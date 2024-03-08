@@ -1,0 +1,24 @@
+name: S2Together / Request PR review
+
+on:
+  pull_request:
+    types:
+      - opened
+      - reopened
+
+jobs:
+  request-pr-review:
+    name: Request PR review
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+
+      - name: Comment using library
+        run: |
+          PR_NUMBER=${{ github.event.pull_request.number }}
+          MESSAGE_COMMENT="## Thank You for Your Pull Request! 🎉\n\n### Summary:\nThank you for opening this pull request! We appreciate your contribution to the project. To ensure a smooth review process, please take a moment to provide a brief summary of the changes and how they enhance the project.\n\n### Code Quality:\n- Please confirm that your changes meet our code quality standards.\n- If you have added new features or fixed bugs, briefly explain the approach you've taken.\n\n### Self-Testing:\nBefore requesting a review, please self-test your changes to catch any potential issues. Once you are confident, label the pull request with 'Please review.'\n\n### Confirmation Checklist:\n- [ ] Summary provided\n- [ ] Code quality confirmed\n- [ ] Self-tested\n- [ ] Labeled with 'Please review'\n\nThank you once again for your contribution! We look forward to reviewing your changes. If you have any questions or need assistance, feel free to ask. 😊"
+          GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
+          COMMENT_URL="https://api.github.com/repos/${{ github.repository }}/issues/${PR_NUMBER}/comments"
+
+          curl -s -H "Authorization: token ${GITHUB_TOKEN}" -X POST $COMMENT_URL -d "{\"body\":\"$MESSAGE_COMMENT\"}"

@@ -1,0 +1,27 @@
+name: Study Together / misspell
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+jobs:
+  misspell:
+    name: Study Together / misspell
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+      - name: misspell
+        uses: reviewdog/action-misspell@v1
+        with:
+          github_token: ${{ secrets.SUKUNA_BOT_TOKEN }}
+          reporter: github-pr-review
+          exclude: |
+            ./yarn.lock
+            ./.github/.workflows/misspell.yml
+          fail_on_error: true
