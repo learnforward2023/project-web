@@ -34,3 +34,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# In real project, you need to add these files to .gitignore to not push environment variables to github. You should use vault or other secret management tools to manage your environment variables.
+# .env.development
+# .env.production
