@@ -1,8 +1,17 @@
 import type { Metadata } from 'next'
 import localFont from 'next/font/local'
-import './globals.scss'
+import { ConfigProvider, ThemeConfig } from 'antd'
 
 const roboto = localFont({ src: '../fonts/Roboto-Regular.ttf' })
+
+const theme: ThemeConfig = {
+  token: {
+    fontSize: 14,
+    colorPrimary: 'rgb(56, 189, 248)'
+  }
+}
+
+import './globals.scss'
 
 export const metadata: Metadata = {
   title: process.env.APP_TITLE,
@@ -16,7 +25,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={roboto.className}>{children}</body>
+      <body className={roboto.className}>
+        <ConfigProvider theme={theme}>
+          <section className="s2together">
+            {children}
+          </section>
+        </ConfigProvider>
+      </body>
     </html>
   )
 }
