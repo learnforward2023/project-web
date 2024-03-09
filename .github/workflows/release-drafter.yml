@@ -23,10 +23,10 @@ jobs:
       # write permission is required for autolabeler
       # otherwise, read permission is required at least
       pull-requests: read
-    if: ${{ github.event.pull_request.merged && contains(github.event.pull_request.labels.*.name, 'feature') || contains(github.event.pull_request.labels.*.name, 'bug') || contains(github.event.pull_request.labels.*.name, 'chore') }}
     runs-on: ubuntu-latest
     steps:
-      - run: |
+      - if: ${{ github.event.pull_request.merged }}
+        run: |
           TAG_NAME=$(ruby -e 'print "release-#{Time.now.getlocal("+09:00").strftime("%Y-%m-%d-%H%M%S_%3N")}"')
           echo "tag_name=$TAG_NAME" >> $GITHUB_ENV
       # (Optional) GitHub Enterprise requires GHE_HOST variable set
