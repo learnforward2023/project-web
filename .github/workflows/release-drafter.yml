@@ -21,6 +21,7 @@ jobs:
       # write permission is required for autolabeler
       # otherwise, read permission is required at least
       pull-requests: read
+    if: ${{ contains(github.event.pull_request.labels.*.name, 'feature') || contains(github.event.pull_request.labels.*.name, 'bug') || contains(github.event.pull_request.labels.*.name, 'chore') }}
     runs-on: ubuntu-latest
     steps:
       - run: |
