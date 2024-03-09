@@ -56,6 +56,7 @@
     "template-curly-spacing": "error",
     "react/no-unescaped-entities": "off",
     "react-hooks/exhaustive-deps": "off",
-    "@next/next/no-img-element": "off"
+    "@next/next/no-img-element": "off",
+    "import/no-anonymous-default-export": "off"
   }
 }
