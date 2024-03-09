@@ -75,6 +75,23 @@ jobs:
             - $SSH_KEY
       - run: ssh -o StrictHostKeyChecking=no -v $USER_HOST@$HOST_NAME "./together-k8s-manifests/deploy.sh"
 
+  check_image_exists_on_docker_hub:
+    docker:
+      - image: cimg/base:stable
+    environment:
+      DOCKER_IMAGE: learnforward2022/project-web
+    steps:
+      - run:
+          name: Check whether image exists on Docker Hub
+          command: |
+            if docker manifest inspect $DOCKER_IMAGE:$CIRCLE_SHA1 > /dev/null ; echo $? then
+              echo "Image exists on Docker Hub"
+              exit 0
+            else
+              echo "Image does not exist on Docker Hub"
+              exit 1
+            fi
+
 workflows:
   deploy:
     jobs:
@@ -102,3 +119,9 @@ workflows:
             branches:
               only:
                 - main
+      - check_image_exists_on_docker_hub:
+          filters:
+            tags:
+              only: /release-.*/
+            branches:
+              ignore: /.*/
