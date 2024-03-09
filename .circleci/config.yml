@@ -75,6 +75,54 @@ jobs:
             - $SSH_KEY
       - run: ssh -o StrictHostKeyChecking=no -v $USER_HOST@$HOST_NAME "./together-k8s-manifests/deploy.sh"
 
+  check_image_exists_on_docker_hub:
+    docker:
+      - image: cimg/base:stable
+    environment:
+      DOCKER_IMAGE: learnforward2022/project-web
+    steps:
+      - run:
+          name: Check whether image exists on Docker Hub
+          command: |
+            if docker manifest inspect $DOCKER_IMAGE:$CIRCLE_SHA1 > /dev/null; then
+              echo "Image exists on Docker Hub"
+              exit 0
+            else
+              echo "Image does not exist on Docker Hub"
+              exit 1
+            fi
+  
+  checkout-and-push-to-together-k8s-manifests-production:
+    docker:
+      - image: cimg/base:stable
+    steps:
+      - add_ssh_keys:
+          fingerprints:
+            - $SSH_KEY_FOR_PR
+      - run:
+          name: Checkout the other repository
+          command: |
+            git clone https://$GITHUB_DEVELOPER_TOKEN@github.com/learnforward2023/$K8S_REPOSITORY
+      - run:
+          name: Production - Update image tag in together-k8s-manifests
+          command: |
+            cd together-k8s-manifests/services/project-web
+            sed -i "s/image: learnforward2022\/project-web:.*$/image: learnforward2022\/project-web:$CIRCLE_SHA1/" deployment.yaml
+
+            git config user.email "actions@github.com"
+            git config user.name "GitHub Actions"
+            git add .
+            git commit -m "Feat: Update image tag for production - $CIRCLE_SHA1"
+            git push origin main
+
+  deploy-to-production:
+    executor: docker/docker
+    steps:
+      - add_ssh_keys:
+          fingerprints:
+            - $SSH_KEY
+      - run: ssh -o StrictHostKeyChecking=no -v $USER_HOST@$HOST_NAME "./together-k8s-manifests/deploy.sh"
+
 workflows:
   deploy:
     jobs:
@@ -102,3 +150,25 @@ workflows:
             branches:
               only:
                 - main
+      - check_image_exists_on_docker_hub:
+          filters:
+            tags:
+              only: /release-.*/
+            branches:
+              ignore: /.*/
+      - build-and-push-to-production:
+          requires:
+            - check_image_exists_on_docker_hub
+          filters:
+            tags:
+              only: /release-.*/
+            branches:
+              ignore: /.*/
+      - checkout-and-push-to-together-k8s-manifests-production:
+          requires:
+            - build-and-push-to-production
+          filters:
+            tags:
+              only: /release-.*/
+            branches:
+              ignore: /.*/

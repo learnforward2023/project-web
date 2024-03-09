@@ -1,0 +1,30 @@
+# see more details: https://github.com/joelazar/release-drafter-example
+
+change-title-escapes: '\<*_&' # You can add # and @ to disable mentions, and add ` to disable code blocks.
+categories:
+  - title: '✨ Features'
+    labels:
+      - 'feature'
+  - title: '🐛 Bug Fixes'
+    labels:
+      - 'bug'
+  - title: '🧰 Maintenance'
+    labels:
+      - 'chore'
+change-template: '- $TITLE (#$NUMBER by @$AUTHOR)'
+template: |
+  ## What's changed
+
+  $CHANGES
+autolabeler:
+  - label: 'chore'
+    branch:
+      - '/chore\/.+/'
+  - label: 'bug'
+    branch:
+      - '/bug\/.+/'
+      - '/bugfix\/.+/'
+      - '/hotfix\/.+/'
+  - label: 'feature'
+    branch:
+      - '/feature\/.+/'
