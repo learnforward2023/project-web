@@ -4,32 +4,101 @@ orbs:
   docker: circleci/docker@2.5.0
 
 jobs:
-  build-and-push:
+  build-and-push-to-development:
+    environment:
+      DOCKER_IMAGE: learnforward2022/project-web-development
     executor: docker/docker
     steps:
-      - run:
-          name: Build the Docker image
-          command: |
-            echo "Building the Docker image..."
-  deploy:
+      - setup_remote_docker:
+          version: 20.10.14
+          docker_layer_caching: true
+      - checkout
+      - docker/check:
+          docker-username: DOCKER_USER
+          docker-password: DOCKER_PASSWORD
+      - docker/build:
+          image: $DOCKER_IMAGE
+          tag: $CIRCLE_SHA1
+          args:
+            - ENVIRONMENT=development
+      - docker/push:
+          digest-path: /tmp/digest.txt
+          image: $DOCKER_IMAGE
+          tag: $CIRCLE_SHA1
+  build-and-push-to-production:
+    environment:
+      DOCKER_IMAGE: learnforward2022/project-web
     executor: docker/docker
     steps:
+      - setup_remote_docker:
+          version: 20.10.14
+          docker_layer_caching: true
+      - checkout
+      - docker/check:
+          docker-username: DOCKER_USER
+          docker-password: DOCKER_PASSWORD
+      - docker/build:
+          image: $DOCKER_IMAGE
+          tag: $CIRCLE_SHA1
+      - docker/push:
+          digest-path: /tmp/digest.txt
+          image: $DOCKER_IMAGE
+          tag: $CIRCLE_SHA1
+          args:
+            - ENVIRONMENT=production
+  checkout-and-push-to-together-k8s-manifests-development:
+    docker:
+      - image: cimg/base:stable
+    steps:
+      - add_ssh_keys:
+          fingerprints:
+            - $SSH_KEY_FOR_PR
       - run:
-          name: Deploy the Docker image
+          name: Checkout the other repository
           command: |
-            echo "Deploy the Docker image..."
+            git clone https://$GITHUB_DEVELOPER_TOKEN@github.com/learnforward2023/$K8S_REPOSITORY
+      - run:
+          name: Development - Update image tag in together-k8s-manifests
+          command: |
+            cd together-k8s-manifests/services/project-web
+            sed -i "s/image: learnforward2022\/project-web-development:.*$/image: learnforward2022\/project-web-development:$CIRCLE_SHA1/" deployment.yaml
+
+            git config user.email "actions@github.com"
+            git config user.name "GitHub Actions"
+            git add .
+            git commit -m "Feat: Update image tag for development - $CIRCLE_SHA1"
+            git push origin main
+  deploy-to-development:
+    executor: docker/docker
+    steps:
+      - add_ssh_keys:
+          fingerprints:
+            - $SSH_KEY
+      - run: ssh -o StrictHostKeyChecking=no -v $USER_HOST@$HOST_NAME "./together-k8s-manifests/deploy.sh"
 
 workflows:
   deploy:
     jobs:
-      - build-and-push:
+      - build-and-push-to-development:
           filters:
             branches:
               only:
                 - main
-      - deploy:
+      - build-and-push-to-production:
+          filters:
+            branches:
+              only:
+                - main
+      - checkout-and-push-to-together-k8s-manifests-development:
           requires:
-            - build-and-push
+            - build-and-push-to-development
+          filters:
+            branches:
+              only:
+                - main
+      - deploy-to-development:
+          requires:
+            - checkout-and-push-to-together-k8s-manifests-development
           filters:
             branches:
               only:
