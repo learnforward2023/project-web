@@ -1,0 +1,46 @@
+# see more details: https://github.com/release-drafter/release-drafter
+
+name: 'Create/update a draft release to production'
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+  pull_request:
+    types: [ labeled ]
+
+permissions:
+  contents: read
+
+jobs:
+  update_release_draft:
+    permissions:
+      # write permission is required to create a github release
+      contents: write
+      # write permission is required for autolabeler
+      # otherwise, read permission is required at least
+      pull-requests: read
+    if: ${{ contains(github.event.pull_request.labels.*.name, 'feature') || contains(github.event.pull_request.labels.*.name, 'bug') || contains(github.event.pull_request.labels.*.name, 'chore') }}
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          TAG_NAME=$(ruby -e 'print "release-#{Time.now.getlocal("+09:00").strftime("%Y-%m-%d-%H%M%S_%3N")}"')
+          echo "tag_name=$TAG_NAME" >> $GITHUB_ENV
+      # (Optional) GitHub Enterprise requires GHE_HOST variable set
+      #- name: Set GHE_HOST
+      #  run: |
+      #    echo "GHE_HOST=${GITHUB_SERVER_URL##https:\/\/}" >> $GITHUB_ENV
+
+      # Drafts your next Release notes as Pull Requests are merged into "master"
+      - uses: release-drafter/release-drafter@v6
+        # (Optional) specify config name to use, relative to .github/. Default: release-drafter.yml
+        # with:
+        #   config-name: my-config.yml
+        #   disable-autolabeler: true
+        with:
+          name: ${{ env.tag_name }}
+          tag: ${{ env.tag_name }}
+          disable-autolabeler: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
