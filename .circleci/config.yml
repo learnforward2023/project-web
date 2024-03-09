@@ -156,7 +156,7 @@ workflows:
               only: /release-.*/
             branches:
               ignore: /.*/
-      - build-and-push-to-production:
+      - checkout-and-push-to-together-k8s-manifests-production:
           requires:
             - check_image_exists_on_docker_hub
           filters:
@@ -164,9 +164,9 @@ workflows:
               only: /release-.*/
             branches:
               ignore: /.*/
-      - checkout-and-push-to-together-k8s-manifests-production:
+      - deploy-to-production:
           requires:
-            - build-and-push-to-production
+            - checkout-and-push-to-together-k8s-manifests-production
           filters:
             tags:
               only: /release-.*/
