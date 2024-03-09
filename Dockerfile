@@ -22,7 +22,7 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 # Default to development environment
-ARG ENVIRONMENT=development
+ARG ENVIRONMENT=locally
 # Copy the appropriate .env.production file based on the environment argument
 COPY .env.${ENVIRONMENT} .env.production
 
