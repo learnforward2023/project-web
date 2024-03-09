@@ -1,0 +1,36 @@
+version: 2.1
+orbs:
+  node: circleci/node@5.2.0
+  docker: circleci/docker@2.5.0
+
+jobs:
+  build-and-push:
+    executor: docker/docker
+    steps:
+      - run:
+          name: Build the Docker image
+          command: |
+            echo "Building the Docker image..."
+  deploy:
+    executor: docker/docker
+    steps:
+      - run:
+          name: Deploy the Docker image
+          command: |
+            echo "Deploy the Docker image..."
+
+workflows:
+  deploy:
+    jobs:
+      - build-and-push:
+          filters:
+            branches:
+              only:
+                - main
+      - deploy:
+          requires:
+            - build-and-push
+          filters:
+            branches:
+              only:
+                - main
