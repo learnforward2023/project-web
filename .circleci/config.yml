@@ -16,15 +16,14 @@ jobs:
       - docker/check:
           docker-username: DOCKER_USER
           docker-password: DOCKER_PASSWORD
-      - docker/build:
-          image: $DOCKER_IMAGE
-          tag: $CIRCLE_SHA1
-          args:
-            - ENVIRONMENT=development
+      - run:
+          name: Build Docker image for development
+          command: docker build --build-arg ENVIRONMENT=development -t $DOCKER_IMAGE:$CIRCLE_SHA1 .
       - docker/push:
           digest-path: /tmp/digest.txt
           image: $DOCKER_IMAGE
           tag: $CIRCLE_SHA1
+
   build-and-push-to-production:
     environment:
       DOCKER_IMAGE: learnforward2022/project-web
@@ -37,15 +36,14 @@ jobs:
       - docker/check:
           docker-username: DOCKER_USER
           docker-password: DOCKER_PASSWORD
-      - docker/build:
-          image: $DOCKER_IMAGE
-          tag: $CIRCLE_SHA1
+      - run:
+          name: Build Docker image for production
+          command: docker build --build-arg ENVIRONMENT=production -t $DOCKER_IMAGE:$CIRCLE_SHA1 .
       - docker/push:
           digest-path: /tmp/digest.txt
           image: $DOCKER_IMAGE
           tag: $CIRCLE_SHA1
-          args:
-            - ENVIRONMENT=production
+
   checkout-and-push-to-together-k8s-manifests-development:
     docker:
       - image: cimg/base:stable
@@ -68,6 +66,7 @@ jobs:
             git add .
             git commit -m "Feat: Update image tag for development - $CIRCLE_SHA1"
             git push origin main
+
   deploy-to-development:
     executor: docker/docker
     steps:
