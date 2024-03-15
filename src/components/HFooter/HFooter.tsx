@@ -18,7 +18,7 @@ const HFooter: React.FC = () => {
                     <p>
                       Tham gia Discord của Study Together để giao lưu cũng như tìm kiếm bạn bè đồng hành trên con đường học tập (^-^).
                     </p>
-                    <HButton className="mt-4" variant="tertiary" size="small" onClick={() => window.open('https://discord.gg/dvfxZZKd')}>Tham gia &rarr; </HButton>
+                    <HButton className="mt-4 mb-4" variant="tertiary" size="small" onClick={() => window.open('https://discord.gg/dvfxZZKd')}>Tham gia &rarr; </HButton>
                   </div>
                 </Col>
                 <Col lg={{ span: 8 }} md={{ span: 8 }} sm={{ span: 12 }} xs={{ span: 12 }}>
