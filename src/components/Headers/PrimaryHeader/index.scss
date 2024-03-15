@@ -1,0 +1,37 @@
+.PrimaryHeader {
+  .HTextLogo {
+    $color1: #c53d3d;
+    $color2: #a600be;
+    $color3: #3a47d3;
+    $color4: #6f00ff;
+    $color5: #18c355;
+    $gap: #000;
+    text-transform: uppercase;
+    color: transparent;
+    margin: 0;
+    background: linear-gradient(124deg,
+        $color1 19%,
+        $gap 19%,
+        $gap 20%,
+        $color2 20%,
+        $color2 39%,
+        $gap 39%,
+        $gap 40%,
+        $color3 40%,
+        $color3 59%,
+        $gap 59%,
+        $gap 60%,
+        $color4 60%,
+        $color4 79%,
+        $gap 79%,
+        $gap 80%,
+        $color5 80%,
+        $color5 100%,
+      );
+    -webkit-background-clip: text;
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: 100% 100%;
+    position: relative;
+  }
+}
