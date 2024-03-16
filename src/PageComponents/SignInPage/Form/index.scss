@@ -1,0 +1,19 @@
+.SignInForm {
+  width: 448px;
+}
+
+@media screen and (max-width: 448px) {
+  .SignInForm {
+    width: 100%;
+
+    .SNS__ButtonGroup {
+      display: flex;
+      justify-content: space-between;
+      gap: 4px;
+    }
+
+    .SignInForm__Container {
+      box-shadow: none!important;
+    }
+  }
+}
