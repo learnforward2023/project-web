@@ -12,7 +12,7 @@ export const PrimaryLayout: React.FC<PrimaryLayoutProps> = ({ children }) => {
     <section className="PrimaryLayout">
       <PrimaryHeader />
       <section className="mx-auto flex max-w-7xl items-center justify-between lg:px-8 p-4 PrimaryLayout__Main">
-        <main>{children}</main>
+        <main className="w-full">{children}</main>
         <FloatButton.BackTop />
       </section>
       <HFooter />

@@ -2,11 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
+@import '../styles/common.scss';
+
 :root {
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb: 255, 255, 255;
-  --color-primary: rgb(56, 189, 248);
+  --color-primary: #3c82f7;
   --color-secondary: rgb(249, 168, 212);
 }
 

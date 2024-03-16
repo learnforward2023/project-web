@@ -1,0 +1,25 @@
+.SignInForm {
+  min-width: 510px;
+}
+
+@media screen and (max-width: 640px) {
+  .SignInForm {
+    min-width: 100%;
+
+    .SNS__ButtonGroup {
+      display: flex;
+      justify-content: space-between;
+      gap: 4px;
+    }
+
+    .SignInForm__Container {
+      box-shadow: none!important;
+    }
+  }
+}
+
+@media screen and (max-width: 1024px){
+  .SignInForm {
+    margin: 0 auto;
+  }
+}

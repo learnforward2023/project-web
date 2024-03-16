@@ -7,7 +7,7 @@ const roboto = localFont({ src: '../fonts/Roboto-Regular.ttf' })
 const theme: ThemeConfig = {
   token: {
     fontSize: 14,
-    colorPrimary: 'rgb(56, 189, 248)'
+    colorPrimary: '#3c82f7'
   }
 }
 

@@ -6,6 +6,7 @@ interface IHButtonProps {
   variant?: 'primary' | 'secondary' | 'tertiary';
   size?: 'small' | 'normal' | 'large';
   type?: 'button' | 'submit' | 'reset';
+  fullWidth?: boolean;
   disabled?: boolean;
   onClick?: () => void;
   children: React.ReactNode;
@@ -17,6 +18,7 @@ const HButton: React.FC<IHButtonProps> = ({
   size = 'normal',
   type = 'button',
   disabled = false,
+  fullWidth = false,
   onClick,
   children
 }) => {
@@ -61,10 +63,11 @@ const HButton: React.FC<IHButtonProps> = ({
 
   return (
     <button
-      className={`inline-flex items-center border border-transparent rounded-md font-semibold text-white uppercase tracking-widest disabled:opacity-45 transition ${buttonColor} ${buttonSize} ${className}`}
+      className={`inline-flex justify-center items-center border border-transparent rounded-md font-semibold text-white tracking-widest disabled:opacity-45 transition ${buttonColor} ${buttonSize} ${className}`}
       type={type}
       disabled={disabled}
       onClick={onClick}
+      style={{ width: fullWidth ? '100%' : 'auto' }}
     >
       {children}
     </button>
