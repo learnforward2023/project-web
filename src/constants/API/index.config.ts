@@ -1,11 +1,11 @@
 export default {
   production: {
-    API_DOMAIN: 'https://studytogether/api/v1'
+    API_DOMAIN: 'https://merry.studytogether/api/v1'
   },
   development: {
-    API_DOMAIN: 'https://studytogether/api/v2'
+    API_DOMAIN: 'http://dev.studytogether/api/v1'
   },
   localhost: {
-    API_DOMAIN: 'http://localhost:8080/api/local'
+    API_DOMAIN: 'http://localhost:8080/api/v1'
   }
 }

@@ -14,6 +14,7 @@ const { Text, Link } = Typography
 
 import './index.scss'
 import HGithubButton from '@/components/Buttons/HGithubButton'
+import { applicationConfig } from '@/constants/ApplicationConfig'
 
 type TFormValues = {
   email: string;
@@ -82,7 +83,11 @@ const SignInForm: React.FC<ISignInFormProps> = () => {
           }}>Start with <span className="HTextLogo">Together</span></Text>
           <Flex gap="small" wrap="nowrap" className="SNS__ButtonGroup">
             <HGoogleButton />
-            <HGithubButton />
+            <HGithubButton
+              onClick={() => {
+                window.location.href = applicationConfig.SIGN_WITH_GITHUB
+              }}
+            />
             <HFacebookButton />
           </Flex>
           <Divider style={{ color: token.colorTextSecondary, margin: 0 }}>or</Divider>
