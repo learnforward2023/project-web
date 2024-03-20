@@ -24,7 +24,7 @@ COPY . .
 # Default to development environment
 ARG ENVIRONMENT=locally
 # Copy the appropriate .env.production file based on the environment argument
-COPY .env.${ENVIRONMENT} .env
+COPY .env.${ENVIRONMENT} .env.production
 
 # Next.js collects completely anonymous telemetry data about general usage.
 # Learn more here: https://nextjs.org/telemetry
