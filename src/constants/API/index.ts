@@ -1,15 +1,12 @@
-import APIConfig from './index.config'
 
-let config = APIConfig.localhost
+let API_DOMAIN = 'http://localhost:8080/api/v1'
 
-if (process.env.ENV === 'production') {
-  config = APIConfig.production
-} else if (process.env.ENV === 'development') {
-  config = APIConfig.development
+if (process.env.API_DOMAIN) {
+  API_DOMAIN = process.env.API_DOMAIN
 }
 
 const API = {
-  SAY_HELLO: `${config.API_DOMAIN}/say-hello`
+  SAY_HELLO: `${API_DOMAIN}/say-hello`
 }
 
 export { API }
