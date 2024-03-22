@@ -81,13 +81,21 @@ const SignInForm: React.FC<ISignInFormProps> = () => {
             fontFamily: 'system-ui'
           }}>Start with <span className="HTextLogo">Together</span></Text>
           <Flex gap="small" wrap="nowrap" className="SNS__ButtonGroup">
-            <HGoogleButton />
+            <HGoogleButton
+              onClick={() => {
+                window.location.href = process.env.SIGN_WITH_GOOGLE as string
+              }}
+            />
             <HGithubButton
               onClick={() => {
                 window.location.href = process.env.SIGN_WITH_GITHUB as string
               }}
             />
-            <HFacebookButton />
+            <HFacebookButton
+              onClick={() => {
+                window.location.href = process.env.SIGN_WITH_FACEBOOK as string
+              }}
+            />
           </Flex>
           <Divider style={{ color: token.colorTextSecondary, margin: 0 }}>or</Divider>
         </div>
