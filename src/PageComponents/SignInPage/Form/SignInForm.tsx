@@ -1,7 +1,7 @@
 'use client'
 import React from 'react'
 
-import { Checkbox, Divider, Flex, Form, Grid, Input, theme, Typography } from 'antd'
+import { Checkbox, Divider, Flex, Form, Grid, Input, message, theme, Typography } from 'antd'
 
 import { LockOutlined, MailOutlined } from '@ant-design/icons'
 import HButton from '@/components/Buttons/HButton'
@@ -14,6 +14,7 @@ const { Text, Link } = Typography
 
 import './index.scss'
 import HGithubButton from '@/components/Buttons/HGithubButton'
+import { API } from '@/constants/API'
 
 type TFormValues = {
   email: string;
@@ -30,10 +31,35 @@ const SignInForm: React.FC<ISignInFormProps> = () => {
   const screens = useBreakpoint()
 
   const [isSignInForm, setIsSignInForm] = React.useState<boolean>(true)
+  const [isLoading, setIsLoading] = React.useState<boolean>(false)
 
-  const handleSignIn = (values: TFormValues) => {
-    // eslint-disable-next-line no-console
-    console.log('Handle sign in', values)
+  const handleSignIn = async (values: TFormValues) => {
+    setIsLoading(true)
+    try {
+      const response = await fetch(API.SIGN_IN_WITH_NORMAL_ACCOUNT, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          email: values.email,
+          password: values.password
+        })
+      })
+      const data = await response.json()
+
+      if (response.status === 200) {
+        message.success(data.message)
+      } else {
+        message.error(data.message)
+      }
+
+      setIsLoading(false)
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error('Error', error)
+      setIsLoading(false)
+    }
   }
 
   const handleSignUp = (values: TFormValues) => {
@@ -158,7 +184,7 @@ const SignInForm: React.FC<ISignInFormProps> = () => {
                   </Link>
                 </Form.Item>
                 <Form.Item style={{ marginBottom: '0px' }}>
-                  <HButton variant="primary" size="large" type="submit" fullWidth>
+                  <HButton variant="primary" size="large" type="submit" fullWidth isLoading={isLoading}>
                     Sign in to your account
                   </HButton>
                   <div style={{
