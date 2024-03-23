@@ -1,4 +1,6 @@
 'use client'
+import { LoadingOutlined } from '@ant-design/icons'
+import { Spin } from 'antd'
 import React from 'react'
 
 interface IHButtonProps {
@@ -8,6 +10,7 @@ interface IHButtonProps {
   type?: 'button' | 'submit' | 'reset';
   fullWidth?: boolean;
   disabled?: boolean;
+  isLoading?: boolean;
   onClick?: () => void;
   children: React.ReactNode;
 }
@@ -19,6 +22,7 @@ const HButton: React.FC<IHButtonProps> = ({
   type = 'button',
   disabled = false,
   fullWidth = false,
+  isLoading = false,
   onClick,
   children
 }) => {
@@ -59,7 +63,7 @@ const HButton: React.FC<IHButtonProps> = ({
       sizes = 'py-2 px-4 text-sm'
     }
     setButtonSize(sizes)
-  }, [])
+  }, [variant, size, type, disabled, fullWidth, isLoading, onClick, children])
 
   return (
     <button
@@ -69,7 +73,13 @@ const HButton: React.FC<IHButtonProps> = ({
       onClick={onClick}
       style={{ width: fullWidth ? '100%' : 'auto' }}
     >
-      {children}
+      {
+        isLoading ? (
+          <Spin indicator={<LoadingOutlined style={{ fontSize: 24, color: '#8b5cf6' }} spin />} />
+        ) : (
+          children
+        )
+      }
     </button>
   )
 }

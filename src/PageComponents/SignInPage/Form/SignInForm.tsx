@@ -1,12 +1,13 @@
 'use client'
 import React from 'react'
 
-import { Checkbox, Divider, Flex, Form, Grid, Input, theme, Typography } from 'antd'
+import { Checkbox, Divider, Flex, Form, Grid, Input, message, theme, Typography } from 'antd'
 
 import { LockOutlined, MailOutlined } from '@ant-design/icons'
 import HButton from '@/components/Buttons/HButton'
 import HGoogleButton from '@/components/Buttons/HGoogleButton'
 import HFacebookButton from '@/components/Buttons/HFacebookButton'
+import { useRouter } from 'next/navigation'
 
 const { useToken } = theme
 const { useBreakpoint } = Grid
@@ -14,6 +15,11 @@ const { Text, Link } = Typography
 
 import './index.scss'
 import HGithubButton from '@/components/Buttons/HGithubButton'
+import { API } from '@/constants/API'
+import { headers, isFetchingSuccess, POST_METHOD } from '@/constants/fetchTools'
+import { TOGETHER_TOKEN } from '@/constants/constants'
+import { UserContext, UserType, useSetUser } from '@/contexts/user/context'
+import { jwtDecode } from 'jwt-decode'
 
 type TFormValues = {
   email: string;
@@ -28,26 +34,89 @@ interface ISignInFormProps { }
 const SignInForm: React.FC<ISignInFormProps> = () => {
   const { token } = useToken()
   const screens = useBreakpoint()
+  const setUser = useSetUser()
+  const user = React.useContext(UserContext)
+  const router = useRouter()
 
   const [isSignInForm, setIsSignInForm] = React.useState<boolean>(true)
+  const [isLoading, setIsLoading] = React.useState<boolean>(false)
+  
 
-  const handleSignIn = (values: TFormValues) => {
-    // eslint-disable-next-line no-console
-    console.log('Handle sign in', values)
-  }
+  const handleSignIn = async (values: TFormValues) => {
+    setIsLoading(true)
+    try {
+      const response = await fetch(API.SIGN_IN_WITH_NORMAL_ACCOUNT, {
+        method: POST_METHOD,
+        headers: headers(),
+        body: JSON.stringify({
+          email: values.email,
+          password: values.password
+        })
+      })
+      const data = await response.json()
 
-  const handleSignUp = (values: TFormValues) => {
-    // eslint-disable-next-line no-console
-    console.log('Handle sign up', values)
-  }
+      if (isFetchingSuccess(response)) {
+        message.success(data.message)
+        window.localStorage.setItem(TOGETHER_TOKEN, JSON.stringify(data.token))
+        const userDecoded: UserType = jwtDecode(data.token)
 
-  const onFinish = (values: TFormValues) => {
-    if (isSignInForm) {
-      handleSignIn(values)
-    } else {
-      handleSignUp(values)
+        setUser({
+          id: userDecoded.id,
+          email: userDecoded.email,
+          provider: userDecoded?.provider,
+          name: userDecoded?.name
+        })
+      } else {
+        message.error(data.message)
+      }
+
+      setIsLoading(false)
+    } catch (_error) {
+      setIsLoading(false)
     }
   }
+
+  const handleSignUp = async (values: TFormValues) => {
+    setIsLoading(true)
+    try {
+      const response = await fetch(API.SIGN_UP_WITH_NORMAL_ACCOUNT, {
+        method: POST_METHOD,
+        headers: headers(),
+        body: JSON.stringify({
+          email: values.email,
+          password: values.password,
+          passwordConfirmation: values.passwordConfirmation
+        })
+      })
+      const data = await response.json()
+
+      if (isFetchingSuccess(response)) {
+        message.success(data.message)
+        window.localStorage.setItem(TOGETHER_TOKEN, JSON.stringify(data.token))
+
+        const userDecoded: UserType = jwtDecode(data.token)
+
+        setUser({
+          id: userDecoded.id,
+          email: userDecoded.email,
+          provider: userDecoded?.provider,
+          name: userDecoded?.name
+        })
+      } else {
+        message.error(data.errors[0])
+      }
+
+      setIsLoading(false)
+    } catch (_error) {
+      setIsLoading(false)
+    }
+  }
+  
+  React.useEffect(() => {
+    if (user?.email) {
+      router.push('/')
+    }
+  }, [user])
 
   return (
     <section
@@ -104,7 +173,7 @@ const SignInForm: React.FC<ISignInFormProps> = () => {
           initialValues={{
             remember: true
           }}
-          onFinish={onFinish}
+          onFinish={(values) => (isSignInForm ? handleSignIn(values) : handleSignUp(values))}
           layout="vertical"
           requiredMark="optional"
         >
@@ -158,7 +227,7 @@ const SignInForm: React.FC<ISignInFormProps> = () => {
                   </Link>
                 </Form.Item>
                 <Form.Item style={{ marginBottom: '0px' }}>
-                  <HButton variant="primary" size="large" type="submit" fullWidth>
+                  <HButton variant="primary" size="large" type="submit" fullWidth isLoading={isLoading}>
                     Sign in to your account
                   </HButton>
                   <div style={{
@@ -225,7 +294,7 @@ const SignInForm: React.FC<ISignInFormProps> = () => {
                   </Form.Item>
                 </Form.Item>
                 <Form.Item style={{ marginBottom: '0px' }}>
-                  <HButton variant="primary" size="large" type="submit" fullWidth>
+                  <HButton variant="primary" size="large" type="submit" fullWidth isLoading={isLoading}>
                     Create a new Together account
                   </HButton>
                   <div style={{

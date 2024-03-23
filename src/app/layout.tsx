@@ -32,6 +32,8 @@ export const metadata: Metadata = {
   }
 }
 
+import UserProvider from '../contexts/user/provider'
+
 export default function RootLayout({
   children
 }: Readonly<{
@@ -41,9 +43,12 @@ export default function RootLayout({
     <html lang="en">
       <body className={roboto.className}>
         <ConfigProvider theme={theme}>
-          <section className="s2together">
-            {children}
-          </section>
+          <UserProvider>
+            <section className="s2together">
+              {children}
+            </section>
+          </UserProvider>
+
         </ConfigProvider>
       </body>
     </html>

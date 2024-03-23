@@ -6,7 +6,9 @@ if (process.env.API_DOMAIN) {
 }
 
 const API = {
-  SAY_HELLO: `${API_DOMAIN}/say-hello`
+  SAY_HELLO: `${API_DOMAIN}/say-hello`,
+  SIGN_IN_WITH_NORMAL_ACCOUNT: `${API_DOMAIN}/users/login`,
+  SIGN_UP_WITH_NORMAL_ACCOUNT: `${API_DOMAIN}/users/register`
 }
 
 export { API }
