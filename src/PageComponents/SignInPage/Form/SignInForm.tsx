@@ -1,5 +1,5 @@
 'use client'
-import React from 'react'
+import React, { useContext } from 'react'
 
 import { Checkbox, Divider, Flex, Form, Grid, Input, message, theme, Typography } from 'antd'
 
@@ -17,6 +17,8 @@ import HGithubButton from '@/components/Buttons/HGithubButton'
 import { API } from '@/constants/API'
 import { headers, isFetchingSuccess, POST_METHOD } from '@/constants/fetchTools'
 import { TOGETHER_TOKEN } from '@/constants/constants'
+import { UserContext, UserType } from '@/contexts/user/context'
+import { jwtDecode } from 'jwt-decode'
 
 type TFormValues = {
   email: string;
@@ -34,6 +36,7 @@ const SignInForm: React.FC<ISignInFormProps> = () => {
 
   const [isSignInForm, setIsSignInForm] = React.useState<boolean>(true)
   const [isLoading, setIsLoading] = React.useState<boolean>(false)
+  const [, setUser] = useContext(UserContext)
 
   const handleSignIn = async (values: TFormValues) => {
     setIsLoading(true)
@@ -50,7 +53,15 @@ const SignInForm: React.FC<ISignInFormProps> = () => {
 
       if (isFetchingSuccess(response)) {
         message.success(data.message)
-        window.localStorage.setItem(TOGETHER_TOKEN, data.token)
+        window.localStorage.setItem(TOGETHER_TOKEN, JSON.stringify(data.token))
+        const userDecoded: UserType = jwtDecode(data.token)
+
+        setUser({
+          id: userDecoded.id,
+          email: userDecoded.email,
+          provider: userDecoded?.provider,
+          name: userDecoded?.name
+        })
       } else {
         message.error(data.message)
       }
@@ -77,7 +88,16 @@ const SignInForm: React.FC<ISignInFormProps> = () => {
 
       if (isFetchingSuccess(response)) {
         message.success(data.message)
-        window.localStorage.setItem(TOGETHER_TOKEN, data.token)
+        window.localStorage.setItem(TOGETHER_TOKEN, JSON.stringify(data.token))
+
+        const userDecoded: UserType = jwtDecode(data.token)
+
+        setUser({
+          id: userDecoded.id,
+          email: userDecoded.email,
+          provider: userDecoded?.provider,
+          name: userDecoded?.name
+        })
       } else {
         message.error(data.errors[0])
       }
