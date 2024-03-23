@@ -15,7 +15,7 @@ const { Text, Link } = Typography
 import './index.scss'
 import HGithubButton from '@/components/Buttons/HGithubButton'
 import { API } from '@/constants/API'
-import { headers, POST_METHOD } from '@/constants/fetchTools'
+import { headers, isFetchingSuccess, POST_METHOD } from '@/constants/fetchTools'
 import { TOGETHER_TOKEN } from '@/constants/constants'
 
 type TFormValues = {
@@ -48,7 +48,7 @@ const SignInForm: React.FC<ISignInFormProps> = () => {
       })
       const data = await response.json()
 
-      if (response.status === 200) {
+      if (isFetchingSuccess(response)) {
         message.success(data.message)
         window.localStorage.setItem(TOGETHER_TOKEN, data.token)
       } else {
@@ -61,16 +61,30 @@ const SignInForm: React.FC<ISignInFormProps> = () => {
     }
   }
 
-  const handleSignUp = (values: TFormValues) => {
-    // eslint-disable-next-line no-console
-    console.log('Handle sign up', values)
-  }
+  const handleSignUp = async (values: TFormValues) => {
+    setIsLoading(true)
+    try {
+      const response = await fetch(API.SIGN_UP_WITH_NORMAL_ACCOUNT, {
+        method: POST_METHOD,
+        headers: headers(),
+        body: JSON.stringify({
+          email: values.email,
+          password: values.password,
+          passwordConfirmation: values.passwordConfirmation
+        })
+      })
+      const data = await response.json()
 
-  const onFinish = (values: TFormValues) => {
-    if (isSignInForm) {
-      handleSignIn(values)
-    } else {
-      handleSignUp(values)
+      if (isFetchingSuccess(response)) {
+        message.success(data.message)
+        window.localStorage.setItem(TOGETHER_TOKEN, data.token)
+      } else {
+        message.error(data.errors[0])
+      }
+
+      setIsLoading(false)
+    } catch (_error) {
+      setIsLoading(false)
     }
   }
 
@@ -129,7 +143,7 @@ const SignInForm: React.FC<ISignInFormProps> = () => {
           initialValues={{
             remember: true
           }}
-          onFinish={onFinish}
+          onFinish={(values) => (isSignInForm ? handleSignIn(values) : handleSignUp(values))}
           layout="vertical"
           requiredMark="optional"
         >
@@ -250,7 +264,7 @@ const SignInForm: React.FC<ISignInFormProps> = () => {
                   </Form.Item>
                 </Form.Item>
                 <Form.Item style={{ marginBottom: '0px' }}>
-                  <HButton variant="primary" size="large" type="submit" fullWidth>
+                  <HButton variant="primary" size="large" type="submit" fullWidth isLoading={isLoading}>
                     Create a new Together account
                   </HButton>
                   <div style={{
