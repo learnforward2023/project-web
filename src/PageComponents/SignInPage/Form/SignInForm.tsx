@@ -15,6 +15,8 @@ const { Text, Link } = Typography
 import './index.scss'
 import HGithubButton from '@/components/Buttons/HGithubButton'
 import { API } from '@/constants/API'
+import { headers, POST_METHOD } from '@/constants/fetchTools'
+import { TOGETHER_TOKEN } from '@/constants/constants'
 
 type TFormValues = {
   email: string;
@@ -37,10 +39,8 @@ const SignInForm: React.FC<ISignInFormProps> = () => {
     setIsLoading(true)
     try {
       const response = await fetch(API.SIGN_IN_WITH_NORMAL_ACCOUNT, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        method: POST_METHOD,
+        headers: headers(),
         body: JSON.stringify({
           email: values.email,
           password: values.password
@@ -50,14 +50,13 @@ const SignInForm: React.FC<ISignInFormProps> = () => {
 
       if (response.status === 200) {
         message.success(data.message)
+        window.localStorage.setItem(TOGETHER_TOKEN, data.token)
       } else {
         message.error(data.message)
       }
 
       setIsLoading(false)
-    } catch (error) {
-      // eslint-disable-next-line no-console
-      console.error('Error', error)
+    } catch (_error) {
       setIsLoading(false)
     }
   }
