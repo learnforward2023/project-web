@@ -8,7 +8,7 @@ export type UserType = {
 }
 
 export const UserContext = createContext({} as UserType)
-export const UserSetContext = createContext<React.Dispatch<React.SetStateAction<UserType>> | undefined>(undefined)
+export const UserSetContext = createContext<React.Dispatch<React.SetStateAction<UserType>>>({} as React.Dispatch<React.SetStateAction<UserType>>)
 
 export const useSetUser = () => {
   const setUser = useContext(UserSetContext)

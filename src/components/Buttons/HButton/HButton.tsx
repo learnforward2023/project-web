@@ -63,7 +63,7 @@ const HButton: React.FC<IHButtonProps> = ({
       sizes = 'py-2 px-4 text-sm'
     }
     setButtonSize(sizes)
-  }, [])
+  }, [variant, size, type, disabled, fullWidth, isLoading, onClick, children])
 
   return (
     <button

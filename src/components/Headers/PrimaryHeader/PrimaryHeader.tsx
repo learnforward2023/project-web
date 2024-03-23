@@ -1,10 +1,13 @@
-import { Fragment } from 'react'
+import { Fragment, useContext } from 'react'
 import { Popover, Transition } from '@headlessui/react'
 import Link from 'next/link'
 import './index.scss'
 import HButton from '../../Buttons/HButton'
-import { Dropdown, MenuProps } from 'antd'
+import { Dropdown, MenuProps, message } from 'antd'
 import { MenuOutlined, CaretDownOutlined } from '@ant-design/icons'
+import { useRouter } from 'next/navigation'
+import { UserContext, UserSetContext, UserType } from '@/contexts/user/context'
+import { TOGETHER_TOKEN } from '@/constants/constants'
 
 const menuItems: MenuProps['items'] = [
   {
@@ -25,6 +28,10 @@ const menuItems: MenuProps['items'] = [
 ]
 
 const PrimaryHeader: React.FC = () => {
+  const router = useRouter()
+  const userInfo = useContext(UserContext)
+  const setUser = useContext(UserSetContext)
+
   return (
     <header className="bg-white PrimaryHeader">
       <nav className="mx-auto flex max-w-7xl items-center justify-between lg:px-8 p-4" aria-label="Global">
@@ -155,9 +162,27 @@ const PrimaryHeader: React.FC = () => {
           <Link className="text-sm font-semibold leading-6 text-gray-900" href="#" rel="https://studytogether.vn">About Us</Link>
         </Popover.Group>
         <div className="hidden lg:flex lg:flex-1 lg:justify-end">
-          <HButton variant="primary" size="normal" type="submit">
-            Join For Free &rarr;
-          </HButton>
+
+          {
+            userInfo?.email ? (
+              <HButton variant="tertiary" size="normal" type="submit"
+                onClick={() => {
+                  window.localStorage.removeItem(TOGETHER_TOKEN)
+                  setUser({} as UserType)
+                  message.success('Sign out successfully!')
+                  router.push('/')
+                }}
+              >
+                Sign Out
+              </HButton>
+            ) : (
+              <HButton variant="primary" size="normal" type="submit"
+                onClick={() => router.push('/sign_in')}
+              >
+                Join For Free &rarr;
+              </HButton>
+            )
+          }
         </div>
       </nav>
     </header >

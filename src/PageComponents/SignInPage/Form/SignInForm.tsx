@@ -7,6 +7,7 @@ import { LockOutlined, MailOutlined } from '@ant-design/icons'
 import HButton from '@/components/Buttons/HButton'
 import HGoogleButton from '@/components/Buttons/HGoogleButton'
 import HFacebookButton from '@/components/Buttons/HFacebookButton'
+import { useRouter } from 'next/navigation'
 
 const { useToken } = theme
 const { useBreakpoint } = Grid
@@ -17,7 +18,7 @@ import HGithubButton from '@/components/Buttons/HGithubButton'
 import { API } from '@/constants/API'
 import { headers, isFetchingSuccess, POST_METHOD } from '@/constants/fetchTools'
 import { TOGETHER_TOKEN } from '@/constants/constants'
-import { UserType, useSetUser } from '@/contexts/user/context'
+import { UserContext, UserType, useSetUser } from '@/contexts/user/context'
 import { jwtDecode } from 'jwt-decode'
 
 type TFormValues = {
@@ -33,10 +34,13 @@ interface ISignInFormProps { }
 const SignInForm: React.FC<ISignInFormProps> = () => {
   const { token } = useToken()
   const screens = useBreakpoint()
+  const setUser = useSetUser()
+  const user = React.useContext(UserContext)
+  const router = useRouter()
 
   const [isSignInForm, setIsSignInForm] = React.useState<boolean>(true)
   const [isLoading, setIsLoading] = React.useState<boolean>(false)
-  const setUser = useSetUser()
+  
 
   const handleSignIn = async (values: TFormValues) => {
     setIsLoading(true)
@@ -107,6 +111,12 @@ const SignInForm: React.FC<ISignInFormProps> = () => {
       setIsLoading(false)
     }
   }
+  
+  React.useEffect(() => {
+    if (user?.email) {
+      router.push('/')
+    }
+  }, [user])
 
   return (
     <section
