@@ -1,5 +1,5 @@
 'use client'
-import React, { useContext } from 'react'
+import React from 'react'
 
 import { Checkbox, Divider, Flex, Form, Grid, Input, message, theme, Typography } from 'antd'
 
@@ -17,7 +17,7 @@ import HGithubButton from '@/components/Buttons/HGithubButton'
 import { API } from '@/constants/API'
 import { headers, isFetchingSuccess, POST_METHOD } from '@/constants/fetchTools'
 import { TOGETHER_TOKEN } from '@/constants/constants'
-import { UserContext, UserType } from '@/contexts/user/context'
+import { UserType, useSetUser } from '@/contexts/user/context'
 import { jwtDecode } from 'jwt-decode'
 
 type TFormValues = {
@@ -36,7 +36,7 @@ const SignInForm: React.FC<ISignInFormProps> = () => {
 
   const [isSignInForm, setIsSignInForm] = React.useState<boolean>(true)
   const [isLoading, setIsLoading] = React.useState<boolean>(false)
-  const [, setUser] = useContext(UserContext)
+  const setUser = useSetUser()
 
   const handleSignIn = async (values: TFormValues) => {
     setIsLoading(true)

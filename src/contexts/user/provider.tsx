@@ -1,6 +1,6 @@
 'use client'
 import { useEffect, useState } from 'react'
-import { UserContext, UserType } from './context'
+import { UserContext, UserSetContext, UserType } from './context'
 import { TOGETHER_TOKEN } from '@/constants/constants'
 import { jwtDecode } from 'jwt-decode'
 
@@ -28,7 +28,13 @@ const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     }
   }, [])
 
-  return <UserContext.Provider value={[user, setUser]}>{children}</UserContext.Provider>
+  return (
+    <UserContext.Provider value={user}>
+      <UserSetContext.Provider value={setUser}>
+        {children}
+      </UserSetContext.Provider>
+    </UserContext.Provider>
+  )
 }
 
 export default UserProvider

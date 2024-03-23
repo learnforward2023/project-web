@@ -1,4 +1,4 @@
-import { createContext } from 'react'
+import { createContext, useContext } from 'react'
 
 export type UserType = {
   id: number
@@ -7,4 +7,14 @@ export type UserType = {
   name?: string
 }
 
-export const UserContext = createContext(null as unknown as [UserType, React.Dispatch<React.SetStateAction<UserType>>])
+export const UserContext = createContext({} as UserType)
+export const UserSetContext = createContext<React.Dispatch<React.SetStateAction<UserType>> | undefined>(undefined)
+
+export const useSetUser = () => {
+  const setUser = useContext(UserSetContext)
+
+  if (!setUser) {
+    throw new Error('useSetUser must be used within a UserSetContext Provider')
+  }
+  return setUser
+}
