@@ -382,18 +382,12 @@
     "@types/react" "*"
 
 "@types/react@*", "@types/react@^18":
-  version "18.2.64"
-  resolved "https://registry.npmjs.org/@types/react/-/react-18.2.64.tgz"
-  integrity sha512-MlmPvHgjj2p3vZaxbQgFUQFvD8QiZwACfGqEdDSWou5yISWxDQ4/74nCAwsUiX7UFLKZz3BbVSPj+YxeoGGCfg==
+  version "18.2.79"
+  resolved "https://registry.yarnpkg.com/@types/react/-/react-18.2.79.tgz#c40efb4f255711f554d47b449f796d1c7756d865"
+  integrity sha512-RwGAGXPl9kSXwdNTafkOEuFrTBD5SA2B3iEB96xi8+xu5ddUa/cpvyVCSNn+asgLCTHkb5ZxN8gbuibYJi4s1w==
   dependencies:
     "@types/prop-types" "*"
-    "@types/scheduler" "*"
     csstype "^3.0.2"
-
-"@types/scheduler@*":
-  version "0.16.8"
-  resolved "https://registry.npmjs.org/@types/scheduler/-/scheduler-0.16.8.tgz"
-  integrity sha512-WZLiwShhwLRmeV6zH+GkbOFT6Z6VklCItrDioxUnv+u4Ll+8vKeFySoFyK/0ctcRpOmwAicELfmys1sDc/Rw+A==
 
 "@typescript-eslint/parser@^5.4.2 || ^6.0.0":
   version "6.21.0"
